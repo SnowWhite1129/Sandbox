@@ -13,14 +13,20 @@
 #include <sys/stat.h>
 #include <getopt.h>
 
-
 #define	FILE_A	"/tmp/aaa"
 #define	FILE_B	"/tmp/bbb"
 #define	FILE_NULL	"/dev/null"
+#define  MAXARGS     31
+char *args[MAXARGS];
+string basedir;
 
-int main() {
+void argsFree(char **args){
+    for(int i=0;args[i]!= nullptr;++i)
+        free(args[i]);
+}
+int main(int argc, const char **argv) {
 	struct stat st;
-	char *argv[] = { FILE_A, NULL };
+	char *args[] = { FILE_A, NULL };
 	char buf[128];
 	chdir(".");
 	chmod(FILE_A, 0644);
@@ -42,10 +48,54 @@ int main() {
 	execl(FILE_A, FILE_A, NULL);
 	execle(FILE_A, FILE_A, NULL, NULL);
 	execlp(FILE_A, FILE_A, NULL);
-	execv(FILE_A, argv);
-	execvp(FILE_A, argv);
-	execve(FILE_A, argv, NULL);
+	execv(FILE_A, args);
+	execvp(FILE_A, args);
+	execve(FILE_A, args, NULL);
 	system("echo -n");
-	return -1;
+//    bool command = false;
+//    for (int i = 0; i < argc; ++i) {
+//        if (strcmp(argv[i], "-p") == 0){
+//
+//        } else if (strcmp(argv[i], "-d") == 0){
+//
+//        } else if (strcmp(argv[i], "--") == 0){
+//            for(int j=i; j<argc;j++)
+//                args[j] = strdup(argv[i]);
+//            args[argc] = nullptr;
+//            if (execvp(args[0], args) < 0)
+//                fprintf(stderr, "Unknown command: [%s].\n", args[0] );
+//            argsFree(args);
+//
+//            command = true;
+//        } else if (!command) {
+//
+//        } else{
+//
+//        }
+//    }
+//    char c;
+//    while((c=getopt(argc, argv, "p:d:-:")) != -1)
+//    {
+//        switch(c)
+//        {
+//            case 'p':
+//                break;
+//            case 'd':
+//                break;
+//            case '-':
+//
+//                break;
+//            case '?':
+//                system("");
+//                break;
+//            default:
+//                printf("usage: ./sandbox [-p sopath] [-d basedir] [--] cmd [cmd args ...]\n"
+//                       "        -p: set the path to sandbox.so, default = ./sandbox.so\n"
+//                       "        -d: the base directory that is allowed to access, default = .\n"
+//                       "        --: separate the arguments for sandbox and for the executed command\n");
+//                break;
+//        }
+//    }
+    return -1;
 }
 
