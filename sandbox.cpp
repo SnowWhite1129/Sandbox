@@ -29,14 +29,10 @@ bool permission(const char *path){
     return true;
 }
 int chmod(const char *path, mode_t mode) {
-    auto fnptr = NULL; /* function pointer */
-    void *handle;
-    if(fnptr == NULL) {
-        handle = dlopen("libc.so.6", RTLD_LAZY);
-        if(handle != NULL)
-            fnptr = reinterpret_cast<int (*)(const char *, mode_t)>(dlsym(handle, "chmod"));
-    }
-    if(fnptr != NULL)
+    void *handle = dlopen("libc.so.6", RTLD_LAZY);
+    auto fnptr = reinterpret_cast<int (*)(const char *, mode_t)>(dlsym(handle, "chmod"));/* function pointer */
+
+    if(fnptr)
         fprintf(stderr, "real uid = %d\n", fnptr(path, mode));
     dlclose(handle);
     return 0;
