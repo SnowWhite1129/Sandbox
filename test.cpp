@@ -12,10 +12,12 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <getopt.h>
+#include <string>
 
 #define	FILE_A	"file"
 #define	FILE_B	"/tmp/bbb"
 #define	FILE_NULL	"/dev/null"
+using namespace std;
 //#define  MAXARGS     31
 
 //void argsFree(char **args){
