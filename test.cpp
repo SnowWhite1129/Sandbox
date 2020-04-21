@@ -13,18 +13,17 @@
 #include <sys/stat.h>
 #include <getopt.h>
 
-#define	FILE_A	"/tmp/aaa"
+#define	FILE_A	"file"
 #define	FILE_B	"/tmp/bbb"
 #define	FILE_NULL	"/dev/null"
-#define  MAXARGS     31
-char *args[MAXARGS];
-string basedir;
+//#define  MAXARGS     31
 
-void argsFree(char **args){
-    for(int i=0;args[i]!= nullptr;++i)
-        free(args[i]);
-}
+//void argsFree(char **args){
+//    for(int i=0;args[i]!= nullptr;++i)
+//        free(args[i]);
+//}
 int main(int argc, const char **argv) {
+    string basedir;
 //	struct stat st;
 //	char *args[] = { FILE_A, NULL };
 //	char buf[128];
