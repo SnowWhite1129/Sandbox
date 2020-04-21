@@ -28,15 +28,17 @@ using namespace std;
 bool permission(const char *path){
     return true;
 }
-static int (*old_chmod)(const char *, mode_t) = NULL; /* function pointer */
 int chmod(const char *path, mode_t mode) {
+    int (*old_chmod)(const char *, mode_t) = NULL; /* function pointer */
+    void *handle;
     if(old_chmod == NULL) {
-        void *handle = dlopen("libc.so.6", RTLD_LAZY);
+        handle = dlopen("libc.so.6", RTLD_LAZY);
         if(handle != NULL)
             old_chmod = dlsym(handle, "chmod");
     }
     if(old_chmod != NULL)
         fprintf(stderr, "real uid = %d\n", old_chmod(path, mode));
+    dlclose(handle);
     return 0;
 }
 //DIR* opendir(const char *name){
