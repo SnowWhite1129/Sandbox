@@ -27,7 +27,8 @@ int main(int argc, const char **argv) {
     /*
      * We have to implement dynamic loading our .so library
      */
-    for (int i = 0; i < argc; ++i) {
+    //chmod("file", 0644);
+    for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "-p") == 0){
             //TODO:
             ++i;
