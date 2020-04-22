@@ -15,7 +15,6 @@
 #include <string>
 
 using namespace std;
-#define  MAXARGS     31
 
 void argsFree(char **args){
     for(int i=0;args[i]!= nullptr;++i)
@@ -25,53 +24,27 @@ int main(int argc, const char **argv) {
     /*
      * We have to implement dynamic loading our .so library
      */
-    system(argv[1]);
-//    bool command = false;
-//    for (int i = 0; i < argc; ++i) {
-//        if (strcmp(argv[i], "-p") == 0){
-//
-//            ++i;
-//        } else if (strcmp(argv[i], "-d") == 0){
-//
-//            ++i;
-//        } else if (strcmp(argv[i], "--") == 0){
-//            for(int j=i; j<argc;j++)
-//                args[j] = strdup(argv[i]);
-//            args[argc] = nullptr;
-//            if (execvp(args[0], args) < 0)
-//                fprintf(stderr, "Unknown command: [%s].\n", args[0] );
-//            argsFree(args);
-//
-//            command = true;
-//        } else if (!command) {
-//
-//        } else{
-//
-//        }
-//    }
-//    char c;
-//    while((c=getopt(argc, argv, "p:d:-:")) != -1)
-//    {
-//        switch(c)
-//        {
-//            case 'p':
-//                break;
-//            case 'd':
-//                break;
-//            case '-':
-//
-//                break;
-//            case '?':
-//                system("");
-//                break;
-//            default:
-//                printf("usage: ./sandbox [-p sopath] [-d basedir] [--] cmd [cmd args ...]\n"
-//                       "        -p: set the path to sandbox.so, default = ./sandbox.so\n"
-//                       "        -d: the base directory that is allowed to access, default = .\n"
-//                       "        --: separate the arguments for sandbox and for the executed command\n");
-//                break;
-//        }
-//    }
-    return -1;
+    for (int i = 0; i < argc; ++i) {
+        if (strcmp(argv[i], "-p") == 0){
+            //TODO:
+            ++i;
+        } else if (strcmp(argv[i], "-d") == 0){
+            setenv("PWD", argv[i+1], true);
+            ++i;
+        } else if (strcmp(argv[i], "--") == 0){
+            for(int j=i; j<argc;j++)
+                args[j] = strdup(argv[i]);
+            args[argc] = nullptr;
+            if (execvp(args[0], args) < 0)
+                fprintf(stderr, "Unknown command: [%s].\n", args[0] );
+            argsFree(args);
+        } else{
+            printf("usage: ./sandbox [-p sopath] [-d basedir] [--] cmd [cmd args ...]\n"
+                   "        -p: set the path to sandbox.so, default = ./sandbox.so\n"
+                   "        -d: the base directory that is allowed to access, default = .\n"
+                   "        --: separate the arguments for sandbox and for the executed command\n");
+        }
+    }
+    return 0;
 }
 
