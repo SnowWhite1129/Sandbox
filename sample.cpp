@@ -48,3 +48,36 @@ int main(int argc, const char **argv) {
     return -1;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+int chdir(char* path) {
+
+}
+
+#define b(...) __va_args__
+
+chdir(path)
+
+a(type, func_name, b(char* path), b(path))
+
+#define a(type, func_name, args, args2) \
+    type func_name(args) { \
+        dlsym ... chdir(args2) \
+\
+    } \

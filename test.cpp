@@ -37,7 +37,7 @@ int main(int argc, const char **argv) {
         } else if (strcmp(argv[i], "--") == 0){
             char *args[MAXARGS];
             int length = 0;
-            for(; i<argc-1;++length, ++i)
+            for(; i<argc;++length, ++i)
                 args[length] = strdup(argv[i+1]);
             args[length] = nullptr;
             if (execvp(args[0], args) < 0)
