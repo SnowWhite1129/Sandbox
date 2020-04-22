@@ -35,14 +35,14 @@ int chmod(const char *path, mode_t mode) {
     auto fnptr = reinterpret_cast<int (*)(const char *, mode_t)>(dlsym(handle, "chmod"));/* function pointer */
         
     if(fnptr){
-	if (!permission(path)){
-	    errmsg("chmod", path);
-	    return -1;
-	} else{
-	    int ret = fnptr(path, mode);
-	    dlclose(handle);
-	    return ret;
-	}
+        if (!permission(path)){
+            errmsg("chmod", path);
+            return -1;
+        } else{
+            int ret = fnptr(path, mode);
+            dlclose(handle);
+            return ret;
+        }
     }
 
     return 0;
