@@ -13,6 +13,9 @@
 #include <sys/stat.h>
 #include <getopt.h>
 #include <string>
+#include <string.h>
+
+#define MAXARGS 31
 
 using namespace std;
 
@@ -32,9 +35,11 @@ int main(int argc, const char **argv) {
             setenv("PWD", argv[i+1], true);
             ++i;
         } else if (strcmp(argv[i], "--") == 0){
-            for(int j=i; j<argc;j++)
-                args[j] = strdup(argv[i]);
-            args[argc] = nullptr;
+            char *args[MAXARGS];
+            int length = 0;
+            for(; i<argc-1;++length, ++i)
+                args[length] = strdup(argv[i+1]);
+            args[length] = nullptr;
             if (execvp(args[0], args) < 0)
                 fprintf(stderr, "Unknown command: [%s].\n", args[0] );
             argsFree(args);
