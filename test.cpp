@@ -25,7 +25,6 @@ using namespace std;
 //        free(args[i]);
 //}
 int main(int argc, const char **argv) {
-    string basedir;
 //	struct stat st;
 //	char *args[] = { FILE_A, NULL };
 //	char buf[128];

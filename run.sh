@@ -1,2 +1,4 @@
 #!/bin/bash
-LD_PRELOAD=./sandbox.so ./test
+make
+g++ test.cpp -o sandbox
+LD_PRELOAD=./sandbox.so ./sandbox
