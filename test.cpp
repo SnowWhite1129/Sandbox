@@ -3,21 +3,14 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/types.h>
-#include <sys/socket.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
 #include <errno.h>
 #include <sys/stat.h>
 #include <getopt.h>
-#include <string>
 #include <string.h>
 
 #define MAXARGS 31
-
-using namespace std;
 
 void argsFree(char **args){
     for(int i=0;args[i]!= nullptr;++i)
@@ -32,9 +25,7 @@ __attribute__((constructor)) void init(){
 int main(int argc, const char **argv) {
     /*
      * We have to implement dynamic loading our .so library
-     */    
-    chmod("file", 0644);
-    system("");
+     */
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "-p") == 0){
             setenv("LD_PRELOAD", argv[i+1], true);
