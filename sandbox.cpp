@@ -33,7 +33,9 @@ bool permission(const char *path){
 int chmod(const char *path, mode_t mode) {
     void *handle = dlopen("libc.so.6", RTLD_LAZY);
     auto fnptr = reinterpret_cast<int (*)(const char *, mode_t)>(dlsym(handle, "chmod"));/* function pointer */
-        
+    
+    fprintf(stderr, "Injected chmod\n");
+
     if(fnptr){
         if (!permission(path)){
             errmsg("chmod", path);
