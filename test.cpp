@@ -20,23 +20,21 @@ void argsFree(char **args){
 __attribute__((constructor)) void init(){
     unsetenv("LD_PRELOAD");
     setenv("LD_PRELOAD", "./sandbox.so", true);
+    setenv("BASEDIR", ".", true);
 }
 
 int main(int argc, const char **argv) {
-    /*
-     * We have to implement dynamic loading our .so library
-     */
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "-p") == 0){
             setenv("LD_PRELOAD", argv[i+1], true);
             ++i;
         } else if (strcmp(argv[i], "-d") == 0){
-            setenv("PWD", argv[i+1], true);
+            setenv("BASEDIR", argv[i+1], true);
             ++i;
         } else if (strcmp(argv[i], "--") == 0){
             char *args[MAXARGS];
             int length = 0;
-            for(; i<argc;++length, ++i)
+            for(; i<argc-1;++length, ++i)
                 args[length] = strdup(argv[i+1]);
             args[length] = nullptr;
             if (execvp(args[0], args) < 0)
