@@ -41,6 +41,7 @@ int main(int argc, const char **argv) {
                         args[length] = strdup(argv[i]);
                         ++length;
                     } else{
+			printf("./sandbox: invalid option -- \'%c\'\n", argv[i][1]);
                         printf("usage: ./sandbox [-p sopath] [-d basedir] [--] cmd [cmd args ...]\n"
                                "        -p: set the path to sandbox.so, default = ./sandbox.so\n"
                                "        -d: the base directory that is allowed to access, default = .\n"
@@ -53,6 +54,10 @@ int main(int argc, const char **argv) {
             args[length] = strdup(argv[i]);
             ++length;
         }
+    }
+    if (length == 0){
+	printf("no command given.\n");
+	return 0;
     }
     args[length] = nullptr;
     if (execvp(args[0], args) < 0)

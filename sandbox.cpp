@@ -54,7 +54,6 @@ bool permission(const char *path, const char *path2){
 type func_name(args) {                     \
     void *handle = dlopen("libc.so.6", RTLD_LAZY); \
     auto lib_##fnptr = reinterpret_cast<type (*)(args)>(dlsym(handle, #func_name));/* function pointer */ \
-    fprintf(stderr, "Injected\n");          \
                                             \
     if(lib_##fnptr){                        \
         if (!permission(path)){             \
@@ -67,7 +66,7 @@ type func_name(args) {                     \
         }                                   \
     }                                       \
 }
-/*
+
 FUNC(int, chdir, arg(const char *path), arg(path), -1, arg(path), Access)
 
 FUNC(int, chmod, arg(char* path, mode_t mode), arg(path, mode), -1, arg(path), Access)
@@ -124,4 +123,4 @@ FUNC(int, execve, arg(const char *pathname, char *const argv[], char *const envp
 FUNC(int, execvp, arg(const char *file, char *const argv[]), arg(file, argv), -1, arg(nullptr), Exec)
 
 FUNC(int, system, arg(const char *command), arg(command), -1, arg(nullptr), Exec)
-*/
+
