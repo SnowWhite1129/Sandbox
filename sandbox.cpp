@@ -8,16 +8,18 @@
 #include <dlfcn.h>
 #include <cstdio>
 
-enum command {Access, Exec};
-
-void errmsg(const char funcname[], const char path[], command cmd){
-    switch (cmd){
-        case Access:
-            fprintf(stderr, "[sandbox] %s: access to %s is not allowed\n", funcname, path);
-            break;
-        case Exec:
-            fprintf(stderr, "[sandbox] %s(%s): not allowed\n", funcname, path);
-            break;
+void errmsg(const char funcname[], const char path[], const char cmd[]){
+    if (strcmp(cmd, "Access")==0) {
+        fprintf(stderr, "[sandbox] %s: access to %s is not allowed\n", funcname, path);
+    } else{
+        fprintf(stderr, "[sandbox] %s(%s): not allowed\n", funcname, path);
+    }
+}
+void errmsg(const char funcname[], const char path[], const char path2[], const char cmd[]){
+    if (strcmp(cmd, "Access")==0) {
+        fprintf(stderr, "[sandbox] %s: access to %s or %s is not allowed\n", funcname, path2, path);
+    } else{
+        fprintf(stderr, "[sandbox] %s(%s): not allowed\n", funcname, path);
     }
 }
 bool permission(const char *path){
