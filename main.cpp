@@ -26,20 +26,17 @@ int main(int argc, const char **argv) {
         if (argv[i][0] == '-') {
             switch (argv[i][1]){
                 case 'p':
-                    setenv("LD_PRELOAD", argv[i+1], true);
-                    ++i;
+                    setenv("LD_PRELOAD", argv[++i], true);
                     break;
                 case 'd':
-                    setenv("BASEDIR", argv[i+1], true);
-                    ++i;
+                    setenv("BASEDIR", argv[++i], true);
                     break;
                 case '-':
                     start = true;
                     break;
                 default:
                     if (start){
-                        args[length] = strdup(argv[i]);
-                        ++length;
+                        args[length++] = strdup(argv[i]);
                     } else{
 			printf("./sandbox: invalid option -- \'%c\'\n", argv[i][1]);
                         printf("usage: ./sandbox [-p sopath] [-d basedir] [--] cmd [cmd args ...]\n"
@@ -51,8 +48,7 @@ int main(int argc, const char **argv) {
                     break;
             }
         } else {
-            args[length] = strdup(argv[i]);
-            ++length;
+            args[length++] = strdup(argv[i]);
         }
     }
     if (length == 0){

@@ -1,2 +1,2 @@
 #!/bin/bash
-LD_PRELOAD=./sandbox.so ./sample
+LD_PRELOAD=./sandbox.so ./sample1

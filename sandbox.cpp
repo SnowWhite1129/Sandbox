@@ -5,9 +5,11 @@
 #include <stdarg.h>
 #include <dlfcn.h>
 #include <cstdio>
-
 enum command {Access, Exec};
 void errmsg(const char funcname[], const char path[], command cmd){
+    if(!path){
+	printf("Error path\n");
+    }
     switch (cmd){
         case Access:
             fprintf(stderr, "[sandbox] %s: access to %s is not allowed\n", funcname, path);
@@ -18,6 +20,9 @@ void errmsg(const char funcname[], const char path[], command cmd){
     }
 }
 void errmsg(const char funcname[], const char path[], const char path2[], command cmd){
+    if(!path){
+        printf("Error path\n");
+    }
     switch (cmd){
         case Access:
             fprintf(stderr, "[sandbox] %s: access to %s or %s is not allowed\n", funcname, path, path2);
@@ -33,9 +38,11 @@ bool permission(const char *path, command cmd){
     }
     char abspath[1024], absbase[1024];
     realpath(getenv("BASEDIR"), absbase);
-   
+    if(path==nullptr){
+	printf("Path is null\n");
+    }   
     if (realpath(path, abspath)){
-	printf("BASEDIR: %s\nPATH: %s\n", absbase, abspath);
+//	printf("BASEDIR: %s\nPATH: %s\n", absbase, abspath);
         return strncmp(abspath, absbase, strlen(absbase))==0;
     } else{
         return false;
@@ -60,7 +67,7 @@ bool permission(const char *path, const char *path2, command cmd){
 type func_name(args) {                     \
     void *handle = dlopen("libc.so.6", RTLD_LAZY); \
     auto lib_##fnptr = reinterpret_cast<type (*)(args)>(dlsym(handle, #func_name));/* function pointer */ \
-    printf("Injected\n");                   \
+    				            \
     if(lib_##fnptr){                        \
         if (!permission(path, cmd)){        \
             errmsg(#func_name, path, cmd);  \
@@ -71,10 +78,13 @@ type func_name(args) {                     \
             return ret;                     \
         }                                   \
     } else{				    \
-	printf("Not found\n");              \
+	fprintf(stderr, "Not found\n");     \
+	return ec;			    \
     }	    				    \
 }
 
+#ifdef __cplusplus
+extern "C"{
 FUNC(int, chdir, arg(const char *path), arg(path), -1, arg(path), Access)
 
 FUNC(int, chmod, arg(char* path, mode_t mode), arg(path, mode), -1, arg(path), Access)
@@ -91,13 +101,13 @@ FUNC(int, link, arg(const char *oldpath, const char *newpath), arg(oldpath, newp
 
 FUNC(int, mkdir, arg(const char *pathname, mode_t mode), arg(pathname, mode), -1, arg(pathname), Access)
 
-FUNC(int, open, arg(const char *pathname, int flags), arg(pathname, flags), -1, arg(pathname), Access)
-FUNC(int, open64, arg(const char *pathname, int flags), arg(pathname, flags), -1, arg(pathname), Access)
+//FUNC(int, open, arg(const char *pathname, int flags), arg(pathname, flags), -1, arg(pathname), Access)
+//FUNC(int, open64, arg(const char *pathname, int flags), arg(pathname, flags), -1, arg(pathname), Access)
 FUNC(int, open, arg(const char *pathname, int flags, mode_t mode), arg(pathname, flags, mode), -1, arg(pathname), Access)
 FUNC(int, open64, arg(const char *pathname, int flags, mode_t mode), arg(pathname, flags, mode), -1, arg(pathname), Access)
 
-FUNC(int, openat, arg(int dirfd, const char *pathname, int flags), arg(dirfd, pathname, flags), -1, arg(pathname), Access)
-FUNC(int, openat64, arg(int dirfd, const char *pathname, int flags), arg(dirfd, pathname, flags), -1, arg(pathname), Access)
+//FUNC(int, openat, arg(int dirfd, const char *pathname, int flags), arg(dirfd, pathname, flags), -1, arg(pathname), Access)
+//FUNC(int, openat64, arg(int dirfd, const char *pathname, int flags), arg(dirfd, pathname, flags), -1, arg(pathname), Access)
 FUNC(int, openat, arg(int dirfd, const char *pathname, int flags, mode_t mode), arg(dirfd, pathname, flags, mode), -1, arg(pathname), Access)
 FUNC(int, openat64, arg(int dirfd, const char *pathname, int flags, mode_t mode), arg(dirfd, pathname, flags, mode), -1, arg(pathname), Access)
 
@@ -111,8 +121,8 @@ FUNC(int, rename, arg(const char *oldpath, const char *newpath), arg(oldpath, ne
 
 FUNC(int, rmdir, arg(const char *pathname), arg(pathname), -1, arg(pathname), Access)
 
-FUNC(int, __xstat, arg(const char *pathname, struct stat *statbuf), arg(pathname, statbuf), -1, arg(pathname), Access)
-FUNC(int, __xstat64, arg(const char *pathname, struct stat *statbuf), arg(pathname, statbuf), -1, arg(pathname), Access)
+FUNC(int, __xstat, arg(int ver, const char *pathname, struct stat *statbuf), arg(ver, pathname, statbuf), -1, arg(pathname), Access)
+FUNC(int, __xstat64, arg(int ver, const char *pathname, struct stat *statbuf), arg(ver, pathname, statbuf), -1, arg(pathname), Access)
 
 FUNC(int, symlink, arg(const char *target, const char *linkpath), arg(target, linkpath), -1, arg(target, linkpath), Access)
 
@@ -130,5 +140,7 @@ FUNC(int, execve, arg(const char *pathname, char *const argv[], char *const envp
 
 FUNC(int, execvp, arg(const char *file, char *const argv[]), arg(file, argv), -1, arg(file), Exec)
 
-FUNC(int, system, arg(const char *command), arg(command), -1, arg(nullptr), Exec)
+FUNC(int, system, arg(const char *command), arg(command), -1, arg(command), Exec)
 
+}
+#endif
