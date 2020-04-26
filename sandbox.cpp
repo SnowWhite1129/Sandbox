@@ -1,8 +1,6 @@
 #include <stdlib.h>
 #include <unistd.h>
-#include <sys/types.h>
 #include <errno.h>
-#include <sys/stat.h>
 #include <string.h>
 #include <stdarg.h>
 #include <dlfcn.h>
@@ -29,20 +27,28 @@ void errmsg(const char funcname[], const char path[], const char path2[], comman
             break;
     }
 }
-bool permission(const char *path){
+bool permission(const char *path, command cmd){
+    if(cmd == Exec){
+	return false;
+    }
     char abspath[1024], absbase[1024];
     realpath(getenv("BASEDIR"), absbase);
+   
     if (realpath(path, abspath)){
-        return strncmp(abspath, absbase, strlen(abspath))==0;
+	printf("BASEDIR: %s\nPATH: %s\n", absbase, abspath);
+        return strncmp(abspath, absbase, strlen(absbase))==0;
     } else{
         return false;
     }
 }
-bool permission(const char *path, const char *path2){
+bool permission(const char *path, const char *path2, command cmd){
+    if(cmd == Exec){
+	return false;
+    }
     char abspath[1024], abspath2[1024], absbase[1024];
     realpath(getenv("BASEDIR"), absbase);
     if (realpath(path, abspath) && realpath(path2, abspath2)){
-        return (strncmp(abspath, absbase, strlen(abspath))==0) && (strncmp(abspath2, absbase, strlen(abspath2))==0);
+        return (strncmp(abspath, absbase, strlen(absbase))==0) && (strncmp(abspath2, absbase, strlen(absbase))==0);
     } else{
         return false;
     }
@@ -54,9 +60,9 @@ bool permission(const char *path, const char *path2){
 type func_name(args) {                     \
     void *handle = dlopen("libc.so.6", RTLD_LAZY); \
     auto lib_##fnptr = reinterpret_cast<type (*)(args)>(dlsym(handle, #func_name));/* function pointer */ \
-                                            \
+    printf("Injected\n");                   \
     if(lib_##fnptr){                        \
-        if (!permission(path)){             \
+        if (!permission(path, cmd)){        \
             errmsg(#func_name, path, cmd);  \
             return ec;                      \
         } else{                             \
@@ -64,7 +70,9 @@ type func_name(args) {                     \
             dlclose(handle);                \
             return ret;                     \
         }                                   \
-    }                                       \
+    } else{				    \
+	printf("Not found\n");              \
+    }	    				    \
 }
 
 FUNC(int, chdir, arg(const char *path), arg(path), -1, arg(path), Access)
@@ -110,17 +118,17 @@ FUNC(int, symlink, arg(const char *target, const char *linkpath), arg(target, li
 
 FUNC(int, unlink, arg(const char *pathname), arg(pathname), -1, arg(pathname), Access)
 
-FUNC(int, execl, arg(const char *path, const char *arg, ...), arg(path, arg), -1, arg(nullptr), Exec)
+FUNC(int, execl, arg(const char *path, const char *arg, ...), arg(path, arg), -1, arg(path), Exec)
 
-FUNC(int, execle, arg(const char *path, const char *arg, ...), arg(path, arg), -1, arg(nullptr), Exec)
+FUNC(int, execle, arg(const char *path, const char *arg, ...), arg(path, arg), -1, arg(path), Exec)
 
-FUNC(int, execlp, arg(const char *file, const char *arg, ...), arg(file, arg), -1, arg(nullptr), Exec)
+FUNC(int, execlp, arg(const char *file, const char *arg, ...), arg(file, arg), -1, arg(file), Exec)
 
-FUNC(int, execv, arg(const char *path, char *const argv[]), arg(path, argv), -1, arg(nullptr), Exec)
+FUNC(int, execv, arg(const char *path, char *const argv[]), arg(path, argv), -1, arg(path), Exec)
 
-FUNC(int, execve, arg(const char *pathname, char *const argv[], char *const envp[]), arg(pathname, argv, envp), -1, arg(nullptr), Exec)
+FUNC(int, execve, arg(const char *pathname, char *const argv[], char *const envp[]), arg(pathname, argv, envp), -1, arg(pathname), Exec)
 
-FUNC(int, execvp, arg(const char *file, char *const argv[]), arg(file, argv), -1, arg(nullptr), Exec)
+FUNC(int, execvp, arg(const char *file, char *const argv[]), arg(file, argv), -1, arg(file), Exec)
 
 FUNC(int, system, arg(const char *command), arg(command), -1, arg(nullptr), Exec)
 

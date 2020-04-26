@@ -18,6 +18,7 @@
 #define	FILE_B	"/tmp/bbb"
 #define	FILE_NULL	"/dev/null"
 int main(int argc, const char **argv) {
+	/*
 	struct stat st;
 	char *args[] = { FILE_A, NULL };
 	char buf[128];
@@ -27,10 +28,12 @@ int main(int argc, const char **argv) {
 	creat(FILE_A, O_RDONLY);
 	fopen(FILE_A, "rt");
 	link(FILE_A, FILE_B);
-	mkdir(FILE_A, 0755);
+	mkdir(FILE_A, 0755);	
 	open(FILE_A, O_RDONLY);
 	openat(AT_FDCWD, FILE_A, 0755);
+	*/
 	opendir(FILE_A);
+	/*
 	readlink(FILE_NULL, buf, sizeof(buf));
 	remove(FILE_A);
 	rename(FILE_A, FILE_B);
@@ -45,5 +48,6 @@ int main(int argc, const char **argv) {
 	execvp(FILE_A, args);
 	execve(FILE_A, args, NULL);
 	system("echo -n");
+	*/
     return -1;
 }
