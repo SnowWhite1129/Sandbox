@@ -25,11 +25,11 @@ void errmsg(const char funcname[], const char path[], command cmd){
     }
     switch (cmd){
         case Access:
-            if((fp = old_fopen("/dev/tty", "w")) == nullptr)
+            if((fp = old_fopen("/dev/tty", "w")))
                 fprintf(fp, "[sandbox] %s: access to %s is not allowed\n", funcname, path);
             break;
         case Exec:
-            if((fp = old_fopen("/dev/tty", "w")) == nullptr)
+            if((fp = old_fopen("/dev/tty", "w")))
                 fprintf(fp, "[sandbox] %s(%s): not allowed\n", funcname, path);
             break;
     }
