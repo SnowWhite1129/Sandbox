@@ -6,6 +6,19 @@
 #include <dlfcn.h>
 #include <cstdio>
 enum command {Access, Exec};
+static FILE* (*old_fopen)(const char *pathname, const char *mode) = nullptr;
+static FILE* (*old_fopen64)(const char *pathname, const char *mode) = nullptr;
+__attribute__((constructor)) void init(){
+    void *handle = dlopen("libc.so.6", RTLD_LAZY); \
+    if(old_fopen == nullptr) {
+        if(handle != nullptr)
+            old_fopen = reinterpret_cast<FILE* (*)(const char *, const char *)>(dlsym(handle, "fopen"));
+    }
+    if(old_fopen64 == nullptr) {
+        if(handle != nullptr)
+            old_fopen64 = reinterpret_cast<FILE* (*)(const char *, const char *)>(dlsym(handle, "fopen64"));
+    }
+}
 void errmsg(const char funcname[], const char path[], command cmd){
     if(!path){
 	    printf("Error path\n");
@@ -13,11 +26,11 @@ void errmsg(const char funcname[], const char path[], command cmd){
     FILE *fp;
     switch (cmd){
         case Access:
-            if((fp = fopen("/dev/tty", "w")) == nullptr)
+            if((fp = old_fopen("/dev/tty", "w")) == nullptr)
                 fprintf(fp, "[sandbox] %s: access to %s is not allowed\n", funcname, path);
             break;
         case Exec:
-            if((fp = fopen("/dev/tty", "w")) == nullptr)
+            if((fp = old_fopen("/dev/tty", "w")) == nullptr)
                 fprintf(fp, "[sandbox] %s(%s): not allowed\n", funcname, path);
             break;
     }
