@@ -52,8 +52,8 @@ int main(int argc, const char **argv) {
         }
     }
     if (length == 0){
-	printf("no command given.\n");
-	return 0;
+        printf("no command given.\n");
+        return 0;
     }
     args[length] = nullptr;
     if (execvp(args[0], args) < 0)
