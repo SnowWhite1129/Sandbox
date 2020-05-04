@@ -8,8 +8,13 @@
 enum command {Access, Exec};
 static FILE* (*old_fopen)(const char *pathname, const char *mode) = nullptr;
 static FILE* (*old_fopen64)(const char *pathname, const char *mode) = nullptr;
-__attribute__((constructor)) void init(){
-    void *handle = dlopen("libc.so.6", RTLD_LAZY); \
+
+void errmsg(const char funcname[], const char path[], command cmd){
+    if(!path){
+	    printf("Error path\n");
+    }
+    FILE *fp;
+    void *handle = dlopen("libc.so.6", RTLD_LAZY);
     if(old_fopen == nullptr) {
         if(handle != nullptr)
             old_fopen = reinterpret_cast<FILE* (*)(const char *, const char *)>(dlsym(handle, "fopen"));
@@ -18,12 +23,6 @@ __attribute__((constructor)) void init(){
         if(handle != nullptr)
             old_fopen64 = reinterpret_cast<FILE* (*)(const char *, const char *)>(dlsym(handle, "fopen64"));
     }
-}
-void errmsg(const char funcname[], const char path[], command cmd){
-    if(!path){
-	    printf("Error path\n");
-    }
-    FILE *fp;
     switch (cmd){
         case Access:
             if((fp = old_fopen("/dev/tty", "w")) == nullptr)
