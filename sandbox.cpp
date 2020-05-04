@@ -10,12 +10,15 @@ void errmsg(const char funcname[], const char path[], command cmd){
     if(!path){
 	    printf("Error path\n");
     }
+    FILE *fp;
     switch (cmd){
         case Access:
-            fprintf(stderr, "[sandbox] %s: access to %s is not allowed\n", funcname, path);
+            if((fp = fopen("/dev/tty", "w")) == nullptr)
+                fprintf(fp, "[sandbox] %s: access to %s is not allowed\n", funcname, path);
             break;
         case Exec:
-            fprintf(stderr, "[sandbox] %s(%s): not allowed\n", funcname, path);
+            if((fp = fopen("/dev/tty", "w")) == nullptr)
+                fprintf(fp, "[sandbox] %s(%s): not allowed\n", funcname, path);
             break;
     }
 }
